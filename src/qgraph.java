@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Scanner;
-import java.util.ArrayList;
 
 public class qgraph {
     public static void main(String[] args) throws Exception {
@@ -10,6 +9,9 @@ public class qgraph {
         //===================================================
         Scanner uin = new Scanner(System.in);
         String[] call =  {"python3", "../python/qplot.py"};
+        //String[] cleancall = {"cd ..", "cd ./python", "rm passoff.txt && rm csvpaths.txt", "cd ..", "cd ./bin", "rm pylog.txt"};
+        String gname = null;
+        String gnumstring = null;
         System.out.print("Please point to the directory contaning the CSV's of interest : ");
         String csvdir = uin.nextLine();
         System.out.print("Is ==> "+csvdir+" : the correct directory? yes (y)/ no (n)/ quit (q) : ");
@@ -48,13 +50,13 @@ public class qgraph {
         FileWriter passoff = new FileWriter("../python/passoff.txt");
         if (csvext.length > 1) {
             System.out.print("How many unique graphs : ");
-            String gnumstring = uin.nextLine();
+            gnumstring = uin.nextLine();
             System.out.print("Graph Name : ");
-            String gname = uin.nextLine();
+            gname = uin.nextLine();
             passoff.write("Number of CSV's : " + Integer.toString(csvext.length) + "\n" + "Name of Graph : " + gname  + "\n"  +  "Number of Graphs : " + gnumstring);
         } else if (csvext.length == 1) {
             System.out.print("Graph Name : ");
-            String gname = uin.nextLine();
+            gname = uin.nextLine();
             passoff.write("Number of CSV's : " + "\n" + "Name of Graph : " + gname + "Number of Graphs : 1");
         }
             passoff.close();
@@ -63,7 +65,22 @@ public class qgraph {
         //=       Step 3: Begin Executing Python Script     =
         //===================================================
         Process pyexc = Runtime.getRuntime().exec(call);
+        File fpath = new File("../plots/"+ gname +".svg");
+        int cnt = 0;
+        while (fpath.canRead() != true) {
+            if (cnt == 0) {
+            System.out.println("Waiting for python to finish it's business...");
+            }
+            cnt += 1;
+            if (cnt == 20000) {
+                System.exit(0);
+            }
+        }
+        System.out.println("Plots found! finishing up...");
+        //CLEANUP
+        
         //TEMP end
         uin.close();
+        System.out.println("Allgedly we have cleaned up");
     }
 }
